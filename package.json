@@ -1,0 +1,49 @@
+{
+  "name": "ticketera",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --max-warnings=0",
+    "prod:check": "npm run lint && npm run build && npm run auth:doctor",
+    "db:generate": "tsx scripts/prisma.ts generate",
+    "db:push": "tsx scripts/prisma.ts db push",
+    "db:deploy": "tsx scripts/prisma.ts migrate deploy",
+    "auth:bootstrap": "tsx scripts/bootstrap-admin.ts",
+    "auth:doctor": "tsx scripts/auth-doctor.ts",
+    "auth:smoke-admin": "tsx scripts/smoke-admin-flow.ts",
+    "auth:smoke-lockout": "tsx scripts/smoke-lockout-flow.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.3",
+    "@radix-ui/react-popover": "^1.1.15",
+    "@radix-ui/react-select": "^2.2.6",
+    "bcryptjs": "^3.0.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.469.0",
+    "next": "^15.2.0",
+    "react": "^19.0.0",
+    "react-day-picker": "^9.7.0",
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "tailwind-merge": "^2.6.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^15.2.0",
+    "prisma": "^6.16.3",
+    "tailwindcss": "^4.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  email              String   @unique
+  passwordHash       String
+  role               String   @default("TECHNICIAN")
+  avatarUrl          String?
+  firstName          String
+  lastName           String
+  employeeId         String   @unique
+  technicianLevel    String   @default("L1")
+  isActive           Boolean  @default(true)
+  mustChangePassword Boolean  @default(true)
+  failedLoginAttempts Int      @default(0)
+  lockedUntil        DateTime?
+  lastLoginAt        DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  sessions           Session[]
+  workLogs           WorkLog[]
+  chatParticipants   ChatConversationParticipant[]
+  chatMessages       ChatMessage[]
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model ChatConversation {
+  id           String                        @id @default(cuid())
+  kind         String                        @default("direct")
+  createdAt    DateTime                      @default(now())
+  updatedAt    DateTime                      @updatedAt
+  participants ChatConversationParticipant[]
+  messages     ChatMessage[]
+
+  @@index([kind])
+  @@index([updatedAt])
+}
+
+model ChatConversationParticipant {
+  id             String           @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime         @default(now())
+  lastReadAt     DateTime?
+  isPinned       Boolean          @default(false)
+  pinnedAt       DateTime?
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId, lastReadAt])
+  @@index([userId, isPinned, pinnedAt])
+}
+
+model ChatMessage {
+  id             String           @id @default(cuid())
+  conversationId String
+  senderUserId   String?
+  body           String
+  messageType    String           @default("user")
+  createdAt      DateTime         @default(now())
+  isPinned       Boolean          @default(false)
+  pinnedAt       DateTime?
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderUser     User?            @relation(fields: [senderUserId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt])
+  @@index([conversationId, isPinned, pinnedAt])
+  @@index([senderUserId])
+  @@index([messageType])
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  userId     String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  lastSeenAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String?
+  action      String
+  targetType  String
+  targetId    String?
+  metadata    String?
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model AppConfig {
+  id               String   @id
+  ateraApiKey      String?
+  ateraAccountId   String?
+  ateraCompanyName String?
+  ateraHomepageUrl String?
+  ateraLocation    String?
+  ateraPlan        String?
+  setupCompletedAt DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model WorkLog {
+  id               String   @id @default(cuid())
+  userId           String
+  ticketId         Int
+  ticketTitle      String
+  entryType        String
+  hoursWorked      Float
+  noteText         String?
+  ateraCommentSync String   @default("synced")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([ticketId, createdAt])
+  @@index([entryType])
+}

@@ -1,0 +1,374 @@
+@import "tailwindcss";
+
+:root {
+  --radius: 0.65rem;
+  --ui-bg: #000;
+  --ui-surface: rgb(24 24 27);
+  --ui-surface-strong: rgb(39 39 42);
+  --ui-border: rgb(63 63 70);
+  --ui-text: rgb(244 244 245);
+  --ui-text-dim: rgb(161 161 170);
+  --ui-accent: rgb(163 230 53);
+  --ui-accent-soft: rgba(163, 230, 53, 0.22);
+  color-scheme: dark;
+}
+
+html {
+  max-width: 100%;
+  background-color: #000;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
+  background-color: #000;
+  color: rgb(244 244 245);
+}
+
+.login-screen-bg {
+  background-color: #000;
+  background-image:
+    radial-gradient(circle at top left, rgba(163, 230, 53, 0.18), transparent 48%),
+    radial-gradient(circle at bottom right, rgba(132, 204, 22, 0.12), transparent 42%);
+}
+
+body[data-scroll-locked] {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* PWA safe-area top bar — only shown in standalone (installed) mode */
+@media (display-mode: standalone) {
+  main {
+    padding-top: env(safe-area-inset-top);
+  }
+  body::before {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background: #000;
+    z-index: 9999;
+    pointer-events: none;
+  }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(113, 113, 122, 0.65) rgba(24, 24, 27, 0.8);
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(24, 24, 27, 0.8);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(113, 113, 122, 0.85), rgba(82, 82, 91, 0.9));
+  border-radius: 999px;
+  border: 2px solid rgba(24, 24, 27, 0.8);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(161, 161, 170, 0.9), rgba(113, 113, 122, 0.95));
+}
+
+::selection {
+  background: rgba(163, 230, 53, 0.35);
+  color: rgb(250 250 250);
+}
+
+:where(a, button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--ui-accent);
+  outline-offset: 2px;
+}
+
+:where(button, input, textarea, select) {
+  -webkit-appearance: none;
+  appearance: none;
+  font: inherit;
+  letter-spacing: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none), (pointer: coarse) {
+  :where(button, [role="button"], a[aria-label], summary) {
+    touch-action: manipulation;
+  }
+}
+
+:where(input, textarea, select) {
+  color: var(--ui-text);
+  border-color: var(--ui-border);
+  background-color: rgba(24, 24, 27, 0.8);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+:where(input, textarea, select)::placeholder {
+  color: var(--ui-text-dim);
+}
+
+:where(input, textarea, select):hover {
+  border-color: rgb(82 82 91);
+  background-color: rgba(24, 24, 27, 0.92);
+}
+
+:where(input, textarea, select):focus {
+  border-color: var(--ui-accent);
+  box-shadow: 0 0 0 3px var(--ui-accent-soft);
+}
+
+:where(input, textarea, select):disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 639px) {
+  :where(input, textarea, select) {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"],
+progress {
+  accent-color: var(--ui-accent);
+}
+
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='rgba(212,212,216,0.9)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 0.7rem center;
+  background-repeat: no-repeat;
+  background-size: 14px;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+option,
+optgroup {
+  color: var(--ui-text);
+  background-color: var(--ui-surface);
+}
+
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--ui-text);
+  box-shadow: 0 0 0px 1000px var(--ui-surface) inset;
+  transition: background-color 9999s ease-out 0s;
+}
+
+.ticket-shell {
+  transition: grid-template-columns 560ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ticket-card {
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 420ms ease,
+    opacity 360ms ease;
+  will-change: transform, opacity;
+}
+
+.ticket-card--list {
+  animation: ticket-slide-in-left 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ticket-card--details {
+  animation: ticket-slide-in-right 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ticket-panel {
+  transform-origin: top center;
+}
+
+.ticket-row {
+  transition: none;
+}
+
+.ticket-fade-in {
+  animation: ticket-fade-up 280ms ease-out both;
+}
+
+.ticket-action-strip > * {
+  opacity: 0;
+  animation: ticket-action-pop 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ticket-action-strip > *:nth-child(1) {
+  animation-delay: 60ms;
+}
+
+.ticket-action-strip > *:nth-child(2) {
+  animation-delay: 130ms;
+}
+
+.ticket-action-strip > *:nth-child(3) {
+  animation-delay: 200ms;
+}
+
+.ticket-action-strip > *:nth-child(4) {
+  animation-delay: 270ms;
+}
+
+.ticket-action-btn {
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease;
+  will-change: transform;
+}
+
+.ticket-action-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.28);
+}
+
+.ticket-action-btn:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.ticket-action-btn svg {
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+}
+
+.ticket-action-btn:hover svg {
+  transform: scale(1.12);
+  opacity: 0.96;
+}
+
+.ticket-tab-btn {
+  opacity: 0;
+  animation: ticket-tab-rise 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ticket-tab-btn:nth-child(1) {
+  animation-delay: 80ms;
+}
+
+.ticket-tab-btn:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+@keyframes composer-caret-blink {
+  0%, 49% {
+    opacity: 1;
+  }
+
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.ticket-tab-btn:nth-child(3) {
+  animation-delay: 220ms;
+}
+
+.ticket-chip {
+  opacity: 0;
+  animation: ticket-fade-up 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.ticket-chip:nth-child(1) {
+  animation-delay: 120ms;
+}
+
+.ticket-chip:nth-child(2) {
+  animation-delay: 180ms;
+}
+
+.ticket-chip:nth-child(3) {
+  animation-delay: 240ms;
+}
+
+@keyframes ticket-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ticket-action-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+    filter: saturate(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: saturate(1);
+  }
+}
+
+@keyframes ticket-tab-rise {
+  from {
+    opacity: 0;
+    transform: translateY(9px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ticket-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(20px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes ticket-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-14px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .ticket-action-btn:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .ticket-action-btn:hover svg {
+    transform: none;
+  }
+}
