@@ -6,6 +6,7 @@ cd "$ROOT_DIR"
 
 USE_POSTGRES=false
 TARGET_TAG=""
+IMAGE_REPO="${APP_IMAGE_REPO:-brionispoptart/ticketera}"
 
 usage() {
   cat <<'EOF'
@@ -13,6 +14,7 @@ Usage: ./scripts/deploy-rollback.sh --to-tag TAG [options]
 
 Options:
   --to-tag TAG     Required image tag to deploy (example: 2026.03.27.1)
+  --image-repo REPO  Image repo to roll back (default: APP_IMAGE_REPO)
   --postgres       Enable postgres profile during rollback
   -h, --help       Show this help message
 EOF
@@ -32,6 +34,15 @@ while [[ $# -gt 0 ]]; do
     --postgres)
       USE_POSTGRES=true
       shift
+      ;;
+    --image-repo)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for --image-repo" >&2
+        usage
+        exit 1
+      fi
+      IMAGE_REPO="$2"
+      shift 2
       ;;
     -h|--help)
       usage
@@ -61,15 +72,15 @@ if [[ "$USE_POSTGRES" = true ]]; then
   COMPOSE_ARGS+=(--profile postgres)
 fi
 
+export APP_IMAGE_REPO="$IMAGE_REPO"
 export APP_IMAGE_TAG="$TARGET_TAG"
 export RUN_DB_PUSH_ON_START=false
 
-echo "Rolling back to APP_IMAGE_TAG=$APP_IMAGE_TAG"
+echo "Rolling back to ${APP_IMAGE_REPO}:${APP_IMAGE_TAG}"
 
-if ! docker image inspect "ticketera-app:${APP_IMAGE_TAG}" >/dev/null 2>&1; then
-  echo "Local image ticketera-app:${APP_IMAGE_TAG} not found." >&2
-  echo "Build it first on this host (or pull from your registry) before rollback." >&2
-  exit 1
+if ! docker image inspect "${APP_IMAGE_REPO}:${APP_IMAGE_TAG}" >/dev/null 2>&1; then
+  echo "Local image ${APP_IMAGE_REPO}:${APP_IMAGE_TAG} not found. Pulling..."
+  docker pull "${APP_IMAGE_REPO}:${APP_IMAGE_TAG}"
 fi
 
 docker compose "${COMPOSE_ARGS[@]}" up -d --no-build

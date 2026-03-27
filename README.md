@@ -157,6 +157,9 @@ If running with PostgreSQL in production:
 docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile postgres up --build -d
 ```
 
+Production compose expects app images from `${APP_IMAGE_REPO}:${APP_IMAGE_TAG}`.
+Default repo is `brionispoptart/ticketera`.
+
 By default, `RUN_DB_PUSH_ON_START=false` in production. This prevents unplanned schema mutations on every container restart.
 
 If you need a controlled schema push window (for first boot or planned migration), run one deployment with:
@@ -188,6 +191,9 @@ Common options:
 ```bash
 # Deploy with PostgreSQL profile
 ./scripts/deploy-prod.sh --postgres
+
+# Deploy from a specific image repository
+./scripts/deploy-prod.sh --image-repo brionispoptart/ticketera
 
 # Deploy with a controlled schema push window
 ./scripts/deploy-prod.sh --run-db-push
@@ -222,6 +228,9 @@ Examples:
 
 # Release with postgres profile
 ./scripts/release-prod.sh --postgres
+
+# Release with explicit image repo
+./scripts/release-prod.sh --image-repo brionispoptart/ticketera
 ```
 
 This helper wraps `deploy-prod.sh --image-tag <tag>` so each release is reproducible and rollback-friendly.
@@ -238,6 +247,12 @@ With PostgreSQL profile:
 
 ```bash
 ./scripts/deploy-rollback.sh --to-tag 2026.03.27.1 --postgres
+```
+
+With explicit image repo:
+
+```bash
+./scripts/deploy-rollback.sh --to-tag 2026.03.27.1 --image-repo brionispoptart/ticketera
 ```
 
 Rollback runs with `--no-build` and `RUN_DB_PUSH_ON_START=false` to avoid accidental schema changes during recovery.

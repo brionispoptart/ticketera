@@ -8,6 +8,7 @@ USE_POSTGRES=false
 RUN_DB_PUSH=false
 SKIP_GIT=false
 SKIP_BUILD=false
+IMAGE_REPO="${APP_IMAGE_REPO:-brionispoptart/ticketera}"
 IMAGE_TAG="${APP_IMAGE_TAG:-latest}"
 
 usage() {
@@ -19,6 +20,7 @@ Options:
   --run-db-push    Temporarily set RUN_DB_PUSH_ON_START=true for this deploy
   --skip-git       Skip git fetch/checkout/pull steps
   --skip-build     Skip image build and run compose up -d
+  --image-repo REPO  Build/deploy using image repo REPO (default: APP_IMAGE_REPO)
   --image-tag TAG  Build/deploy using image tag TAG (default: APP_IMAGE_TAG or latest)
   -h, --help       Show this help message
 EOF
@@ -41,6 +43,15 @@ while [[ $# -gt 0 ]]; do
     --skip-build)
       SKIP_BUILD=true
       shift
+      ;;
+    --image-repo)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for --image-repo" >&2
+        usage
+        exit 1
+      fi
+      IMAGE_REPO="$2"
+      shift 2
       ;;
     --image-tag)
       if [[ $# -lt 2 ]]; then
@@ -79,7 +90,9 @@ if [[ "$USE_POSTGRES" = true ]]; then
   COMPOSE_ARGS+=(--profile postgres)
 fi
 
+export APP_IMAGE_REPO="$IMAGE_REPO"
 export APP_IMAGE_TAG="$IMAGE_TAG"
+echo "APP_IMAGE_REPO=$APP_IMAGE_REPO"
 echo "APP_IMAGE_TAG=$APP_IMAGE_TAG"
 
 if [[ "$RUN_DB_PUSH" = true ]]; then

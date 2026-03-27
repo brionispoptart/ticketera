@@ -7,7 +7,7 @@ services:
         max-file: "5"
 
   app:
-    image: ticketera-app:${APP_IMAGE_TAG:-latest}
+    image: ${APP_IMAGE_REPO:-brionispoptart/ticketera}:${APP_IMAGE_TAG:-latest}
     restart: always
     security_opt:
       - no-new-privileges:true

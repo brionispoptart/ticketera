@@ -9,6 +9,7 @@ RUN_DB_PUSH=false
 SKIP_GIT=false
 SKIP_BUILD=false
 CUSTOM_TAG=""
+IMAGE_REPO="${APP_IMAGE_REPO:-brionispoptart/ticketera}"
 
 usage() {
   cat <<'EOF'
@@ -16,6 +17,7 @@ Usage: ./scripts/release-prod.sh [options]
 
 Options:
   --tag TAG        Use explicit release tag (default: UTC timestamp)
+  --image-repo REPO  Use image repo REPO (default: APP_IMAGE_REPO)
   --postgres       Enable postgres profile during deploy
   --run-db-push    Temporarily set RUN_DB_PUSH_ON_START=true for this release
   --skip-git       Skip git fetch/checkout/pull steps
@@ -33,6 +35,15 @@ while [[ $# -gt 0 ]]; do
         exit 1
       fi
       CUSTOM_TAG="$2"
+      shift 2
+      ;;
+    --image-repo)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for --image-repo" >&2
+        usage
+        exit 1
+      fi
+      IMAGE_REPO="$2"
       shift 2
       ;;
     --postgres)
@@ -71,7 +82,7 @@ fi
 
 echo "Release tag: $RELEASE_TAG"
 
-DEPLOY_ARGS=(--image-tag "$RELEASE_TAG")
+DEPLOY_ARGS=(--image-repo "$IMAGE_REPO" --image-tag "$RELEASE_TAG")
 if [[ "$USE_POSTGRES" = true ]]; then
   DEPLOY_ARGS+=(--postgres)
 fi
