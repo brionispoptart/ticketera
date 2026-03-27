@@ -26,9 +26,57 @@ model User {
   updatedAt          DateTime @updatedAt
   sessions           Session[]
   workLogs           WorkLog[]
+  chatParticipants   ChatConversationParticipant[]
+  chatMessages       ChatMessage[]
 
   @@index([role])
   @@index([isActive])
+}
+
+model ChatConversation {
+  id           String                        @id @default(cuid())
+  kind         String                        @default("direct")
+  createdAt    DateTime                      @default(now())
+  updatedAt    DateTime                      @updatedAt
+  participants ChatConversationParticipant[]
+  messages     ChatMessage[]
+
+  @@index([kind])
+  @@index([updatedAt])
+}
+
+model ChatConversationParticipant {
+  id             String           @id @default(cuid())
+  conversationId String
+  userId         String
+  joinedAt       DateTime         @default(now())
+  lastReadAt     DateTime?
+  isPinned       Boolean          @default(false)
+  pinnedAt       DateTime?
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId, lastReadAt])
+  @@index([userId, isPinned, pinnedAt])
+}
+
+model ChatMessage {
+  id             String           @id @default(cuid())
+  conversationId String
+  senderUserId   String?
+  body           String
+  messageType    String           @default("user")
+  createdAt      DateTime         @default(now())
+  isPinned       Boolean          @default(false)
+  pinnedAt       DateTime?
+  conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderUser     User?            @relation(fields: [senderUserId], references: [id], onDelete: SetNull)
+
+  @@index([conversationId, createdAt])
+  @@index([conversationId, isPinned, pinnedAt])
+  @@index([senderUserId])
+  @@index([messageType])
 }
 
 model Session {
