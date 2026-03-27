@@ -49,11 +49,11 @@ export async function POST(request: NextRequest) {
     }
 
     await completeInitialSetup({
-      email,
-      firstName,
-      lastName,
-      employeeId,
-      password,
+      email: email ?? "",
+      firstName: firstName ?? "",
+      lastName: lastName ?? "",
+      employeeId: employeeId ?? "",
+      password: password ?? "",
       ateraApiKey,
     });
 
