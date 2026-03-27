@@ -206,6 +206,26 @@ The script will:
 - run Docker Compose with `docker-compose.yml` + `docker-compose.prod.yml`
 - print resulting container status
 
+### One-command tagged release
+
+Use the release helper to generate a UTC timestamp tag automatically and deploy it:
+
+```bash
+./scripts/release-prod.sh
+```
+
+Examples:
+
+```bash
+# Force a custom tag
+./scripts/release-prod.sh --tag 2026.03.27.1
+
+# Release with postgres profile
+./scripts/release-prod.sh --postgres
+```
+
+This helper wraps `deploy-prod.sh --image-tag <tag>` so each release is reproducible and rollback-friendly.
+
 ### Rollback to a prior release
 
 Use the rollback script to redeploy a previously built image tag:
