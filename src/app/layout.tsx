@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { MobileZoomLock } from "@/components/mobile-zoom-lock";
 import { PwaRegister } from "@/components/pwa-register";
+import { getAppBranding } from "@/lib/setup";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
