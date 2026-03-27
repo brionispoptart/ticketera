@@ -8,6 +8,7 @@ USE_POSTGRES=false
 RUN_DB_PUSH=false
 SKIP_GIT=false
 SKIP_BUILD=false
+IMAGE_TAG="${APP_IMAGE_TAG:-latest}"
 
 usage() {
   cat <<'EOF'
@@ -18,6 +19,7 @@ Options:
   --run-db-push    Temporarily set RUN_DB_PUSH_ON_START=true for this deploy
   --skip-git       Skip git fetch/checkout/pull steps
   --skip-build     Skip image build and run compose up -d
+  --image-tag TAG  Build/deploy using image tag TAG (default: APP_IMAGE_TAG or latest)
   -h, --help       Show this help message
 EOF
 }
@@ -39,6 +41,15 @@ while [[ $# -gt 0 ]]; do
     --skip-build)
       SKIP_BUILD=true
       shift
+      ;;
+    --image-tag)
+      if [[ $# -lt 2 ]]; then
+        echo "Missing value for --image-tag" >&2
+        usage
+        exit 1
+      fi
+      IMAGE_TAG="$2"
+      shift 2
       ;;
     -h|--help)
       usage
@@ -67,6 +78,9 @@ COMPOSE_ARGS=(-f docker-compose.yml -f docker-compose.prod.yml)
 if [[ "$USE_POSTGRES" = true ]]; then
   COMPOSE_ARGS+=(--profile postgres)
 fi
+
+export APP_IMAGE_TAG="$IMAGE_TAG"
+echo "APP_IMAGE_TAG=$APP_IMAGE_TAG"
 
 if [[ "$RUN_DB_PUSH" = true ]]; then
   export RUN_DB_PUSH_ON_START=true

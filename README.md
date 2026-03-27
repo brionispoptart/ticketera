@@ -175,6 +175,14 @@ Use the deployment script to standardize production updates:
 ./scripts/deploy-prod.sh
 ```
 
+Recommended release tagging pattern:
+
+```bash
+./scripts/deploy-prod.sh --image-tag 2026.03.27.1
+```
+
+Using explicit tags is the preferred production practice because you can redeploy known-good images quickly.
+
 Common options:
 
 ```bash
@@ -186,6 +194,9 @@ Common options:
 
 # Deploy without rebuilding images
 ./scripts/deploy-prod.sh --skip-build
+
+# Deploy with an explicit image tag
+./scripts/deploy-prod.sh --image-tag 2026.03.27.1
 ```
 
 The script will:
@@ -194,6 +205,22 @@ The script will:
 - update local checkout to `origin/main` (unless `--skip-git` is used)
 - run Docker Compose with `docker-compose.yml` + `docker-compose.prod.yml`
 - print resulting container status
+
+### Rollback to a prior release
+
+Use the rollback script to redeploy a previously built image tag:
+
+```bash
+./scripts/deploy-rollback.sh --to-tag 2026.03.27.1
+```
+
+With PostgreSQL profile:
+
+```bash
+./scripts/deploy-rollback.sh --to-tag 2026.03.27.1 --postgres
+```
+
+Rollback runs with `--no-build` and `RUN_DB_PUSH_ON_START=false` to avoid accidental schema changes during recovery.
 
 For local-only testing with `APP_DOMAIN=localhost`, Caddy can serve HTTPS, but browsers may warn because the container's local CA is not automatically trusted by the host OS. For a clean browser-trusted certificate, use a real DNS name that points at the server.
 
