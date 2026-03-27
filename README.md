@@ -143,6 +143,30 @@ Set `DATABASE_PROVIDER=postgresql` and provide `POSTGRES_DATABASE_URL` when you 
 
    - `https://your-domain/api/health/auth`
 
+### Production Docker profile
+
+For production-style runtime defaults (resource limits, log rotation, and no automatic schema push on each boot), use the production override file:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+```
+
+If running with PostgreSQL in production:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile postgres up --build -d
+```
+
+By default, `RUN_DB_PUSH_ON_START=false` in production. This prevents unplanned schema mutations on every container restart.
+
+If you need a controlled schema push window (for first boot or planned migration), run one deployment with:
+
+```bash
+RUN_DB_PUSH_ON_START=true docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+```
+
+Then return it to `false` for normal operation.
+
 For local-only testing with `APP_DOMAIN=localhost`, Caddy can serve HTTPS, but browsers may warn because the container's local CA is not automatically trusted by the host OS. For a clean browser-trusted certificate, use a real DNS name that points at the server.
 
 The Next.js app container is no longer published directly on port `3000`; it is exposed only to the internal Docker network behind Caddy.
