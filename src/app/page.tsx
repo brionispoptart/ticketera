@@ -1,17 +1,15 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Clock3, MessageSquareMore, Settings } from "lucide-react";
+import { Clock3, Settings } from "lucide-react";
 import { TicketApp } from "@/components/ticket-app";
 import { LogoutButton } from "@/components/logout-button";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { requireCurrentUser } from "@/lib/auth/server";
-import { countUnreadMessagesForUser } from "@/lib/chat";
 import { getAppBranding } from "@/lib/setup";
 
 export default async function Home() {
   const [session, branding] = await Promise.all([requireCurrentUser(), getAppBranding()]);
-  const unreadMessages = await countUnreadMessagesForUser(session.user.id);
 
   if (session.user.mustChangePassword) {
     redirect("/change-password");
@@ -38,23 +36,6 @@ export default async function Home() {
             {branding.hasAteraBranding && branding.location ? ` · ${branding.location}` : ""}
           </div>
           <div className="flex flex-wrap items-center gap-2 pt-1 w-full">
-          <Link
-            href="/chat"
-            className={cn(
-              buttonVariants({ size: "icon" }),
-              "ticket-action-btn relative h-11 w-11 rounded-xl border border-sky-400/30 bg-sky-400/10 text-sky-300 hover:border-sky-300/40 hover:bg-sky-400/15 hover:text-sky-200",
-            )}
-            aria-label={unreadMessages > 0 ? `Message center with ${unreadMessages} unread messages` : "Message center"}
-            title={unreadMessages > 0 ? `${unreadMessages} unread messages` : "Message center"}
-          >
-            <MessageSquareMore className="h-5 w-5 stroke-[2.1]" />
-            {unreadMessages > 0 ? (
-              <span
-                className="absolute -right-1 -top-1 h-3.5 w-3.5 rounded-full border-2 border-zinc-950 bg-sky-400 shadow-[0_0_0_1px_rgba(56,189,248,0.28)]"
-                aria-hidden="true"
-              />
-            ) : null}
-          </Link>
           {session.user.role === "ADMIN" ? (
             <Link
               href="/admin/users"
