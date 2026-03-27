@@ -167,6 +167,34 @@ RUN_DB_PUSH_ON_START=true docker compose -f docker-compose.yml -f docker-compose
 
 Then return it to `false` for normal operation.
 
+### One-command production deploy
+
+Use the deployment script to standardize production updates:
+
+```bash
+./scripts/deploy-prod.sh
+```
+
+Common options:
+
+```bash
+# Deploy with PostgreSQL profile
+./scripts/deploy-prod.sh --postgres
+
+# Deploy with a controlled schema push window
+./scripts/deploy-prod.sh --run-db-push
+
+# Deploy without rebuilding images
+./scripts/deploy-prod.sh --skip-build
+```
+
+The script will:
+
+- verify `.env` exists
+- update local checkout to `origin/main` (unless `--skip-git` is used)
+- run Docker Compose with `docker-compose.yml` + `docker-compose.prod.yml`
+- print resulting container status
+
 For local-only testing with `APP_DOMAIN=localhost`, Caddy can serve HTTPS, but browsers may warn because the container's local CA is not automatically trusted by the host OS. For a clean browser-trusted certificate, use a real DNS name that points at the server.
 
 The Next.js app container is no longer published directly on port `3000`; it is exposed only to the internal Docker network behind Caddy.
