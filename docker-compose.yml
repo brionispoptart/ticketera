@@ -14,6 +14,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -21,17 +23,6 @@ services:
       DATABASE_PROVIDER: ${DATABASE_PROVIDER:-sqlite}
       SQLITE_DATABASE_URL: ${SQLITE_DATABASE_URL:-file:/app/data/ticketera.db}
       POSTGRES_DATABASE_URL: ${POSTGRES_DATABASE_URL:-postgresql://ticketera:ticketera_local_password@localhost:5432/ticketera?schema=public}
-      ATERA_API_KEY: ${ATERA_API_KEY}
-      ATERA_API_BASE: ${ATERA_API_BASE:-https://app.atera.com/api/v3}
-      ATERA_TECHNICIAN_ID: ${ATERA_TECHNICIAN_ID:-}
-      AUTH_BOOTSTRAP_ADMIN_EMAIL: ${AUTH_BOOTSTRAP_ADMIN_EMAIL:-admin@local}
-      AUTH_BOOTSTRAP_ADMIN_PASSWORD: ${AUTH_BOOTSTRAP_ADMIN_PASSWORD:-}
-      AUTH_BOOTSTRAP_ADMIN_FIRST_NAME: ${AUTH_BOOTSTRAP_ADMIN_FIRST_NAME:-System}
-      AUTH_BOOTSTRAP_ADMIN_LAST_NAME: ${AUTH_BOOTSTRAP_ADMIN_LAST_NAME:-Administrator}
-      AUTH_BOOTSTRAP_ADMIN_EMPLOYEE_ID: ${AUTH_BOOTSTRAP_ADMIN_EMPLOYEE_ID:-ADMIN-0001}
-      AUTH_SESSION_TTL_HOURS: ${AUTH_SESSION_TTL_HOURS:-12}
-      AUTH_MAX_FAILED_LOGIN_ATTEMPTS: ${AUTH_MAX_FAILED_LOGIN_ATTEMPTS:-5}
-      AUTH_LOCKOUT_MINUTES: ${AUTH_LOCKOUT_MINUTES:-15}
     ports:
       - "${APP_PORT:-3000}:3000"
     expose:

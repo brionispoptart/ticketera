@@ -149,6 +149,17 @@ Set `DATABASE_PROVIDER=postgresql` and provide `POSTGRES_DATABASE_URL` when you 
    - Standalone: `http://localhost:3000/api/health/auth`
    - With Caddy: `https://your-domain/api/health/auth`
 
+Environment guidance for the simplified app-only default:
+
+- Keep in deployment env: `APP_CONFIG_ENCRYPTION_KEY`, `DATABASE_PROVIDER`, and database URL values (`SQLITE_DATABASE_URL` or `POSTGRES_DATABASE_URL`).
+- Optional in deployment env: Atera fallback values (`ATERA_API_KEY`, `ATERA_API_BASE`, `ATERA_TECHNICIAN_ID`) and auth tuning values.
+- Managed by first-run setup flow: initial admin account and stored Atera API key.
+
+Why database selection is not part of first-run setup:
+
+- The app must connect to a database before the setup page can load.
+- Because of that, choosing SQLite vs PostgreSQL stays a deployment-time decision.
+
 ### Production Docker profile
 
 For production-style runtime defaults (resource limits, log rotation, and no automatic schema push on each boot), use the production override file:
