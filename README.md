@@ -286,6 +286,24 @@ Examples:
 
 This helper wraps `deploy-prod.sh --image-tag <tag>` so each release is reproducible and rollback-friendly.
 
+### Minimal Docker Hub deploy
+
+For the simplest pull-and-run deployment from Docker Hub, use the minimal compose file:
+
+```bash
+docker compose -f docker-compose.simple.yml up -d
+```
+
+This file:
+
+- pulls `brionispoptart/ticketera:${APP_IMAGE_TAG:-latest}`
+- uses SQLite by default
+- persists app data in a named Docker volume
+- exposes the app on port `4217`
+- keeps `AUTH_COOKIE_SECURE=false` for direct HTTP access
+
+If you want a pinned image version instead of `latest`, set `APP_IMAGE_TAG` in `.env` first.
+
 ### Rollback to a prior release
 
 Use the rollback script to redeploy a previously built image tag:
