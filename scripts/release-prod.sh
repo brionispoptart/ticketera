@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 USE_POSTGRES=false
+USE_CADDY=false
 RUN_DB_PUSH=false
 SKIP_GIT=false
 SKIP_BUILD=false
@@ -17,6 +18,7 @@ Usage: ./scripts/release-prod.sh [options]
 
 Options:
   --tag TAG        Use explicit release tag (default: UTC timestamp)
+  --caddy          Include optional Caddy reverse proxy service
   --image-repo REPO  Use image repo REPO (default: APP_IMAGE_REPO)
   --postgres       Enable postgres profile during deploy
   --run-db-push    Temporarily set RUN_DB_PUSH_ON_START=true for this release
@@ -36,6 +38,10 @@ while [[ $# -gt 0 ]]; do
       fi
       CUSTOM_TAG="$2"
       shift 2
+      ;;
+    --caddy)
+      USE_CADDY=true
+      shift
       ;;
     --image-repo)
       if [[ $# -lt 2 ]]; then
@@ -83,6 +89,9 @@ fi
 echo "Release tag: $RELEASE_TAG"
 
 DEPLOY_ARGS=(--image-repo "$IMAGE_REPO" --image-tag "$RELEASE_TAG")
+if [[ "$USE_CADDY" = true ]]; then
+  DEPLOY_ARGS+=(--caddy)
+fi
 if [[ "$USE_POSTGRES" = true ]]; then
   DEPLOY_ARGS+=(--postgres)
 fi

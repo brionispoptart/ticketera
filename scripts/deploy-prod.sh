@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 USE_POSTGRES=false
+USE_CADDY=false
 RUN_DB_PUSH=false
 SKIP_GIT=false
 SKIP_BUILD=false
@@ -16,6 +17,7 @@ usage() {
 Usage: ./scripts/deploy-prod.sh [options]
 
 Options:
+  --caddy          Include optional Caddy reverse proxy service
   --postgres       Enable postgres profile during deploy
   --run-db-push    Temporarily set RUN_DB_PUSH_ON_START=true for this deploy
   --skip-git       Skip git fetch/checkout/pull steps
@@ -28,6 +30,10 @@ EOF
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
+    --caddy)
+      USE_CADDY=true
+      shift
+      ;;
     --postgres)
       USE_POSTGRES=true
       shift
@@ -86,8 +92,11 @@ if [[ "$SKIP_GIT" = false ]]; then
 fi
 
 COMPOSE_ARGS=(-f docker-compose.yml -f docker-compose.prod.yml)
+if [[ "$USE_CADDY" = true ]]; then
+  COMPOSE_ARGS+=(-f docker-compose.caddy.yml)
+fi
 if [[ "$USE_POSTGRES" = true ]]; then
-  COMPOSE_ARGS+=(--profile postgres)
+  COMPOSE_ARGS+=(-f docker-compose.postgres.yml)
 fi
 
 export APP_IMAGE_REPO="$IMAGE_REPO"

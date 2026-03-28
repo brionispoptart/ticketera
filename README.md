@@ -113,35 +113,41 @@ Set `DATABASE_PROVIDER=postgresql` and provide `POSTGRES_DATABASE_URL` when you 
 ### Docker setup
 
 1. Create `.env` from `.env.example`.
-2. Set the public host values used for HTTPS:
-
-   - `APP_DOMAIN`: the DNS name users will open in the browser
-   - `TLS_EMAIL`: certificate contact email for Let's Encrypt in production
-
-   Example:
-
-   ```env
-   APP_DOMAIN=ticketera.example.com
-   TLS_EMAIL=admin@example.com
-   ```
-
-3. Start services:
+2. Start the app only:
 
    ```bash
    docker compose up --build
    ```
 
-   This starts Caddy in front of the app. Public traffic enters through ports `80` and `443` and is reverse-proxied to the internal app container over the Docker network. SQLite remains the default database.
+   This runs Ticketera standalone on port `3000` with SQLite as the default database.
+
+3. Optional: add Caddy reverse proxy:
+
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.caddy.yml up --build
+   ```
+
+   For Caddy, set:
+
+   - `APP_DOMAIN`: the DNS name users will open in the browser
+   - `TLS_EMAIL`: certificate contact email for Let's Encrypt in production
 
 4. Optional: run with PostgreSQL instead:
 
    ```bash
-   docker compose --profile postgres up --build
+   docker compose -f docker-compose.yml -f docker-compose.postgres.yml up --build
    ```
 
-5. Check auth health:
+5. Optional: use both Caddy and PostgreSQL:
 
-   - `https://your-domain/api/health/auth`
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.caddy.yml -f docker-compose.postgres.yml up --build
+   ```
+
+6. Check auth health:
+
+   - Standalone: `http://localhost:3000/api/health/auth`
+   - With Caddy: `https://your-domain/api/health/auth`
 
 ### Production Docker profile
 
@@ -154,11 +160,25 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
 If running with PostgreSQL in production:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml --profile postgres up --build -d
+docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.postgres.yml up --build -d
+```
+
+If running with Caddy in production:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.caddy.yml up --build -d
+```
+
+If running with both Caddy and PostgreSQL in production:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.caddy.yml -f docker-compose.postgres.yml up --build -d
 ```
 
 Production compose expects app images from `${APP_IMAGE_REPO}:${APP_IMAGE_TAG}`.
 Default repo is `brionispoptart/ticketera`.
+
+The first-run setup flow can collect the Atera API key and initial admin account because those are stored after the app is already running. Database provider selection is different: the app needs a working database before the setup flow can even load, so switching from SQLite to PostgreSQL remains a deployment-time choice.
 
 By default, `RUN_DB_PUSH_ON_START=false` in production. This prevents unplanned schema mutations on every container restart.
 
@@ -191,6 +211,9 @@ Common options:
 ```bash
 # Deploy with PostgreSQL profile
 ./scripts/deploy-prod.sh --postgres
+
+# Deploy with optional Caddy
+./scripts/deploy-prod.sh --caddy
 
 # Deploy from a specific image repository
 ./scripts/deploy-prod.sh --image-repo brionispoptart/ticketera
@@ -229,6 +252,9 @@ Examples:
 # Release with postgres profile
 ./scripts/release-prod.sh --postgres
 
+# Release with Caddy enabled
+./scripts/release-prod.sh --caddy
+
 # Release with explicit image repo
 ./scripts/release-prod.sh --image-repo brionispoptart/ticketera
 ```
@@ -247,6 +273,12 @@ With PostgreSQL profile:
 
 ```bash
 ./scripts/deploy-rollback.sh --to-tag 2026.03.27.1 --postgres
+```
+
+With Caddy enabled:
+
+```bash
+./scripts/deploy-rollback.sh --to-tag 2026.03.27.1 --caddy
 ```
 
 With explicit image repo:

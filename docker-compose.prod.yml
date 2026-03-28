@@ -1,11 +1,4 @@
 services:
-  caddy:
-    restart: always
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-
   app:
     image: ${APP_IMAGE_REPO:-brionispoptart/ticketera}:${APP_IMAGE_TAG:-latest}
     restart: always
@@ -15,15 +8,6 @@ services:
     cpus: "1.00"
     environment:
       RUN_DB_PUSH_ON_START: ${RUN_DB_PUSH_ON_START:-false}
-    logging:
-      options:
-        max-size: "10m"
-        max-file: "5"
-
-  db:
-    restart: always
-    mem_limit: "1g"
-    cpus: "1.00"
     logging:
       options:
         max-size: "10m"

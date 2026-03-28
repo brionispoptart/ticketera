@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ticketera-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ticketera}
+      POSTGRES_USER: ${POSTGRES_USER:-ticketera}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ticketera_local_password}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ticketera_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ticketera} -d ${POSTGRES_DB:-ticketera}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    environment:
+      DATABASE_PROVIDER: postgresql
+      POSTGRES_DATABASE_URL: ${POSTGRES_DATABASE_URL:-postgresql://ticketera:ticketera_local_password@db:5432/ticketera?schema=public}
+
+volumes:
+  ticketera_postgres_data:

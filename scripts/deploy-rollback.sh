@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 USE_POSTGRES=false
+USE_CADDY=false
 TARGET_TAG=""
 IMAGE_REPO="${APP_IMAGE_REPO:-brionispoptart/ticketera}"
 
@@ -14,6 +15,7 @@ Usage: ./scripts/deploy-rollback.sh --to-tag TAG [options]
 
 Options:
   --to-tag TAG     Required image tag to deploy (example: 2026.03.27.1)
+  --caddy          Include optional Caddy reverse proxy service
   --image-repo REPO  Image repo to roll back (default: APP_IMAGE_REPO)
   --postgres       Enable postgres profile during rollback
   -h, --help       Show this help message
@@ -30,6 +32,10 @@ while [[ $# -gt 0 ]]; do
       fi
       TARGET_TAG="$2"
       shift 2
+      ;;
+    --caddy)
+      USE_CADDY=true
+      shift
       ;;
     --postgres)
       USE_POSTGRES=true
@@ -68,8 +74,11 @@ if [[ ! -f ".env" ]]; then
 fi
 
 COMPOSE_ARGS=(-f docker-compose.yml -f docker-compose.prod.yml)
+if [[ "$USE_CADDY" = true ]]; then
+  COMPOSE_ARGS+=(-f docker-compose.caddy.yml)
+fi
 if [[ "$USE_POSTGRES" = true ]]; then
-  COMPOSE_ARGS+=(--profile postgres)
+  COMPOSE_ARGS+=(-f docker-compose.postgres.yml)
 fi
 
 export APP_IMAGE_REPO="$IMAGE_REPO"
