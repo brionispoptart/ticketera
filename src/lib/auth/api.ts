@@ -4,6 +4,13 @@ import { getSetupStatus } from "@/lib/setup";
 import { isLeadOrAdmin } from "@/lib/auth/access";
 
 export async function requireApiUser(request: NextRequest) {
+  const token = getRequestSessionToken(request);
+  const session = await getSessionUser(token);
+
+  if (session) {
+    return session;
+  }
+
   const setup = await getSetupStatus();
   if (!setup.isSetupComplete) {
     return NextResponse.json(
@@ -12,17 +19,10 @@ export async function requireApiUser(request: NextRequest) {
     );
   }
 
-  const token = getRequestSessionToken(request);
-  const session = await getSessionUser(token);
-
-  if (!session) {
-    return NextResponse.json(
-      { error: "Your session is missing or expired. Sign in again." },
-      { status: 401 },
-    );
-  }
-
-  return session;
+  return NextResponse.json(
+    { error: "Your session is missing or expired. Sign in again." },
+    { status: 401 },
+  );
 }
 
 export async function requireAdminUser(request: NextRequest) {

@@ -12,7 +12,7 @@ RUN npm run db:generate && npm run build
 FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=4217
 ENV HOSTNAME=0.0.0.0
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV RUN_DB_PUSH_ON_START=false
@@ -31,8 +31,6 @@ RUN mkdir -p /app/data && chown -R appuser:appgroup /app
 
 USER appuser
 
-EXPOSE 3000
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=5 CMD wget -qO- http://127.0.0.1:3000/api/health/auth >/dev/null || exit 1
+EXPOSE 4217
 
 CMD ["sh", "-c", "mkdir -p /app/data && npm run db:generate && if [ \"${RUN_DB_PUSH_ON_START:-false}\" = \"true\" ]; then npm run db:push; fi && npm run start"]

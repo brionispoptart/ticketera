@@ -10,14 +10,15 @@ export async function getCurrentSession() {
 }
 
 export async function requireCurrentUser() {
+  const session = await getCurrentSession();
+  if (session) {
+    return session;
+  }
+
   const setup = await getSetupStatus();
   if (!setup.isSetupComplete) {
     redirect("/setup");
   }
 
-  const session = await getCurrentSession();
-  if (!session) {
-    redirect("/login");
-  }
-  return session;
+  redirect("/login");
 }

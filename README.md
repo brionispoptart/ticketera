@@ -119,7 +119,8 @@ Set `DATABASE_PROVIDER=postgresql` and provide `POSTGRES_DATABASE_URL` when you 
    docker compose up --build
    ```
 
-   This runs Ticketera standalone on port `3000` with SQLite as the default database.
+   This runs Ticketera standalone on port `4217` with SQLite as the default database.
+   Caddy is not included in this default command and only starts if you add `-f docker-compose.caddy.yml`.
 
 3. Optional: add Caddy reverse proxy:
 
@@ -146,14 +147,27 @@ Set `DATABASE_PROVIDER=postgresql` and provide `POSTGRES_DATABASE_URL` when you 
 
 6. Check auth health:
 
-   - Standalone: `http://localhost:3000/api/health/auth`
+   - Standalone: `http://localhost:4217/api/health/auth`
    - With Caddy: `https://your-domain/api/health/auth`
+
+### Simple Docker Hub compose
+
+For a minimal pull-and-run setup from Docker Hub, use:
+
+```bash
+docker compose -f docker-compose.simple.yml up -d
+```
+
+This file runs app-only mode with a persisted SQLite volume and the same setup-first defaults.
 
 Environment guidance for the simplified app-only default:
 
 - Keep in deployment env: `APP_CONFIG_ENCRYPTION_KEY`, `DATABASE_PROVIDER`, and database URL values (`SQLITE_DATABASE_URL` or `POSTGRES_DATABASE_URL`).
 - Optional in deployment env: Atera fallback values (`ATERA_API_KEY`, `ATERA_API_BASE`, `ATERA_TECHNICIAN_ID`) and auth tuning values.
 - Managed by first-run setup flow: initial admin account and stored Atera API key.
+- Base app-only compose defaults `RUN_DB_PUSH_ON_START=true` so a fresh SQLite database gets initialized automatically.
+- For app-only HTTP deployments, set `AUTH_COOKIE_SECURE=false` so login session cookies can be used without TLS.
+- When running behind HTTPS (for example with Caddy), set `AUTH_COOKIE_SECURE=true`.
 
 Why database selection is not part of first-run setup:
 
@@ -302,7 +316,7 @@ Rollback runs with `--no-build` and `RUN_DB_PUSH_ON_START=false` to avoid accide
 
 For local-only testing with `APP_DOMAIN=localhost`, Caddy can serve HTTPS, but browsers may warn because the container's local CA is not automatically trusted by the host OS. For a clean browser-trusted certificate, use a real DNS name that points at the server.
 
-The Next.js app container is no longer published directly on port `3000`; it is exposed only to the internal Docker network behind Caddy.
+When you use the Caddy overlay, users should access Ticketera through Caddy on ports `80/443` instead of the app port.
 
 If bootstrap auto-generates a password, it is printed in container logs once and the account is forced to change password on first login (Phase 2).
 

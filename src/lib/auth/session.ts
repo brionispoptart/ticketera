@@ -5,6 +5,22 @@ import { prisma } from "../db";
 export const SESSION_COOKIE_NAME = "ticketera_session";
 const SESSION_TTL_HOURS = Number(process.env.AUTH_SESSION_TTL_HOURS || "12");
 
+function parseBooleanEnv(value: string | undefined) {
+  if (!value) {
+    return undefined;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (["1", "true", "yes", "on"].includes(normalized)) {
+    return true;
+  }
+  if (["0", "false", "no", "off"].includes(normalized)) {
+    return false;
+  }
+
+  return undefined;
+}
+
 function sessionExpiryDate() {
   return new Date(Date.now() + SESSION_TTL_HOURS * 60 * 60 * 1000);
 }
@@ -14,10 +30,12 @@ function hashToken(token: string) {
 }
 
 function buildCookieOptions(expiresAt: Date) {
+  const secureOverride = parseBooleanEnv(process.env.AUTH_COOKIE_SECURE);
+
   return {
     httpOnly: true,
     sameSite: "lax" as const,
-    secure: process.env.NODE_ENV === "production",
+    secure: secureOverride ?? false,
     path: "/",
     expires: expiresAt,
   };
