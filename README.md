@@ -112,8 +112,7 @@ Set `DATABASE_PROVIDER=postgresql` and provide `POSTGRES_DATABASE_URL` when you 
 
 ### Docker setup
 
-1. Create `.env` from `.env.example`.
-2. Start the app only:
+1. Start the app only:
 
    ```bash
    docker compose up --build
@@ -121,6 +120,7 @@ Set `DATABASE_PROVIDER=postgresql` and provide `POSTGRES_DATABASE_URL` when you 
 
    This runs Ticketera standalone on port `4217` with SQLite as the default database.
    Caddy is not included in this default command and only starts if you add `-f docker-compose.caddy.yml`.
+   No `.env` file is required for this default path.
 
 3. Optional: add Caddy reverse proxy:
 
@@ -159,15 +159,17 @@ docker compose -f docker-compose.simple.yml up -d
 ```
 
 This file runs app-only mode with a persisted SQLite volume and the same setup-first defaults.
+No `.env` file is required unless you want to override defaults such as `APP_IMAGE_TAG`, `APP_PORT`, or `APP_CONFIG_ENCRYPTION_KEY`.
 
 Environment guidance for the simplified app-only default:
 
-- Keep in deployment env: `APP_CONFIG_ENCRYPTION_KEY`, `DATABASE_PROVIDER`, and database URL values (`SQLITE_DATABASE_URL` or `POSTGRES_DATABASE_URL`).
+- Optional overrides only: `APP_CONFIG_ENCRYPTION_KEY`, `DATABASE_PROVIDER`, and database URL values (`SQLITE_DATABASE_URL` or `POSTGRES_DATABASE_URL`).
 - Optional in deployment env: Atera fallback values (`ATERA_API_KEY`, `ATERA_API_BASE`, `ATERA_TECHNICIAN_ID`) and auth tuning values.
 - Managed by first-run setup flow: initial admin account and stored Atera API key.
-- Base app-only compose defaults `RUN_DB_PUSH_ON_START=true` so a fresh SQLite database gets initialized automatically.
-- For app-only HTTP deployments, set `AUTH_COOKIE_SECURE=false` so login session cookies can be used without TLS.
+- Base app-only Docker defaults initialize a fresh SQLite database automatically on first boot.
+- Base app-only Docker defaults keep `AUTH_COOKIE_SECURE=false` so login works over direct HTTP access.
 - When running behind HTTPS (for example with Caddy), set `AUTH_COOKIE_SECURE=true`.
+- Change `APP_CONFIG_ENCRYPTION_KEY` for any real deployment. The baked-in image default exists only to remove first-run friction.
 
 Why database selection is not part of first-run setup:
 

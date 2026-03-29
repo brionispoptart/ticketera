@@ -15,7 +15,11 @@ ENV NODE_ENV=production
 ENV PORT=4217
 ENV HOSTNAME=0.0.0.0
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV RUN_DB_PUSH_ON_START=false
+ENV RUN_DB_PUSH_ON_START=true
+ENV AUTH_COOKIE_SECURE=false
+ENV DATABASE_PROVIDER=sqlite
+ENV SQLITE_DATABASE_URL=file:/app/data/ticketera.db
+ENV APP_CONFIG_ENCRYPTION_KEY=ticketera-local-dev-change-me
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 

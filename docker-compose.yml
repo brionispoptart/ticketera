@@ -8,20 +8,8 @@ services:
       dockerfile: Dockerfile
     container_name: ticketera-app
     restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: production
-      PORT: 4217
-      RUN_DB_PUSH_ON_START: ${RUN_DB_PUSH_ON_START:-true}
-      APP_CONFIG_ENCRYPTION_KEY: ${APP_CONFIG_ENCRYPTION_KEY}
-      DATABASE_PROVIDER: ${DATABASE_PROVIDER:-sqlite}
-      SQLITE_DATABASE_URL: ${SQLITE_DATABASE_URL:-file:/app/data/ticketera.db}
-      POSTGRES_DATABASE_URL: ${POSTGRES_DATABASE_URL:-postgresql://ticketera:ticketera_local_password@localhost:5432/ticketera?schema=public}
     ports:
       - "${APP_PORT:-4217}:4217"
-    expose:
-      - "4217"
     volumes:
       - ticketera_sqlite_data:/app/data
 
