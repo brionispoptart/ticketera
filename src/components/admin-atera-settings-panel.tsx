@@ -189,7 +189,7 @@ export function AdminAteraSettingsPanel() {
 
       <div className="space-y-6 pt-3">
       {banner ? (
-        <div className={`rounded-[24px] border px-4 py-4 ${banner.type === "error" ? "border-rose-500/30 bg-rose-500/10 text-rose-100" : banner.type === "success" ? "border-lime-500/30 bg-lime-500/10 text-lime-100" : "border-sky-500/30 bg-sky-500/10 text-sky-100"}`}>
+        <div className={`rounded-3xl border px-4 py-4 ${banner.type === "error" ? "border-rose-500/30 bg-rose-500/10 text-rose-100" : banner.type === "success" ? "border-lime-500/30 bg-lime-500/10 text-lime-100" : "border-sky-500/30 bg-sky-500/10 text-sky-100"}`}>
           <div className="font-semibold">{banner.title}</div>
           <div className="mt-1 text-sm opacity-90">{banner.message}</div>
         </div>

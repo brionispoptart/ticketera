@@ -277,7 +277,7 @@ export function AdminUsersPanel({ currentUserId }: { currentUserId: string }) {
 
       <div className="space-y-6 pt-3">
       {banner ? (
-        <div className={`rounded-[24px] border px-4 py-4 ${banner.type === "error" ? "border-rose-500/30 bg-rose-500/10 text-rose-100" : banner.type === "success" ? "border-lime-500/30 bg-lime-500/10 text-lime-100" : "border-sky-500/30 bg-sky-500/10 text-sky-100"}`}>
+        <div className={`rounded-3xl border px-4 py-4 ${banner.type === "error" ? "border-rose-500/30 bg-rose-500/10 text-rose-100" : banner.type === "success" ? "border-lime-500/30 bg-lime-500/10 text-lime-100" : "border-sky-500/30 bg-sky-500/10 text-sky-100"}`}>
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
             <div className="space-y-1">
@@ -409,7 +409,7 @@ export function AdminUsersPanel({ currentUserId }: { currentUserId: string }) {
                     </Button>
                   </form>
 
-                  <div className="rounded-[24px] border border-zinc-800 bg-black/30 p-4">
+                  <div className="rounded-3xl border border-zinc-800 bg-black/30 p-4">
                     <div className="flex items-center gap-2 text-zinc-50">
                       <KeyRound className="h-4 w-4 text-lime-300" />
                       <span className="font-semibold">Reset password</span>

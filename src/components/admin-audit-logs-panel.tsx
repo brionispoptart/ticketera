@@ -95,7 +95,7 @@ export function AdminAuditLogsPanel() {
 
       <div className="space-y-6 pt-3">
       {error ? (
-        <div className="rounded-[24px] border border-rose-500/30 bg-rose-500/10 px-4 py-4 text-sm text-rose-100">{error}</div>
+        <div className="rounded-3xl border border-rose-500/30 bg-rose-500/10 px-4 py-4 text-sm text-rose-100">{error}</div>
       ) : null}
 
       <Card className="border-zinc-800 bg-zinc-950/80">

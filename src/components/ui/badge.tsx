@@ -11,6 +11,8 @@ const badgeVariants = cva(
         default: "border-zinc-700 bg-zinc-800 text-zinc-100",
         secondary: "border-zinc-700 bg-zinc-900 text-zinc-300",
         success: "border-lime-500/40 bg-lime-500/10 text-lime-300",
+        destructive: "border-rose-500/40 bg-rose-500/10 text-rose-300",
+        outline: "border-zinc-700 text-zinc-300",
       },
     },
     defaultVariants: {

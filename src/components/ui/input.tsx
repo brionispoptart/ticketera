@@ -4,6 +4,9 @@ import { cn } from "@/lib/utils";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
+// Project-wide UX: pressing Enter in any Input auto-submits the parent form.
+// This is intentional — single-field forms (login, search, etc.) should submit
+// without requiring a visible submit button click.
 const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, onKeyDown, type, ...props }, ref) => {
   return (
     <input

@@ -2,10 +2,8 @@ name: ticketera
 
 services:
   app:
-    image: ticketera-app:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: brionispoptart/ticketera:latest
+    pull_policy: always
     container_name: ticketera-app
     restart: unless-stopped
     ports:

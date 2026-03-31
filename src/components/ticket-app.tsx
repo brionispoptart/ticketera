@@ -1103,7 +1103,7 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
                     <div className="text-xs font-semibold text-zinc-300">#{ticket.TicketID}</div>
                     <div className="mt-1 truncate text-sm font-semibold text-zinc-100">{ticket.TicketTitle}</div>
                   </div>
-                  <div className="flex flex-wrap justify-start gap-1 sm:max-w-[240px] sm:justify-end">
+                  <div className="flex flex-wrap justify-start gap-1 sm:max-w-60 sm:justify-end">
                     {renderOverviewTag(ticket.TicketPriority || "Low", priorityBadgeClass(ticket.TicketPriority))}
                     {renderOverviewTag(formatImpactLabel(ticket.TicketImpact || "NoImpact"), impactBadgeClass(ticket.TicketImpact))}
                     {renderOverviewTag(ticket.TicketStatus || "Unknown", statusBadgeClass(ticket.TicketStatus))}
@@ -1394,7 +1394,7 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
 
       {selected && isResolveDialogOpen ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-4 sm:items-center">
-          <div className="w-full max-w-md rounded-[24px] border border-zinc-800 bg-zinc-950 p-4 shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
+          <div className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-950 p-4 shadow-[0_20px_80px_rgba(0,0,0,0.45)]">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">

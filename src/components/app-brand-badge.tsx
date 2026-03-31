@@ -24,7 +24,7 @@ export function AppBrandBadge({ displayName, location, plan, compact = false, un
   const unreadLabel = `${unreadCount > 99 ? "99+" : unreadCount} unread`;
 
   return (
-    <div className={`rounded-[24px] border border-zinc-800/90 bg-zinc-950/85 text-zinc-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-sm ${compact ? "px-3 py-3" : "px-4 py-4"}`}>
+    <div className={`rounded-3xl border border-zinc-800/90 bg-zinc-950/85 text-zinc-100 shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-sm ${compact ? "px-3 py-3" : "px-4 py-4"}`}>
       <div className="flex items-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-lime-400/30 bg-lime-400/10 text-sm font-semibold uppercase tracking-[0.18em] text-lime-300">
           {getInitials(displayName)}
