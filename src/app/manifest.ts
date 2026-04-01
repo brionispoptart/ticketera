@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getAppBranding } from "@/lib/setup";
 
+export const dynamic = "force-dynamic";
+
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const branding = await getAppBranding();
 
