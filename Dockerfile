@@ -15,7 +15,6 @@ ENV NODE_ENV=production
 ENV PORT=4217
 ENV HOSTNAME=0.0.0.0
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV RUN_DB_PUSH_ON_START=true
 ENV AUTH_COOKIE_SECURE=false
 ENV DATABASE_PROVIDER=sqlite
 ENV SQLITE_DATABASE_URL=file:/app/data/ticketera.db
@@ -37,4 +36,4 @@ USER appuser
 
 EXPOSE 4217
 
-CMD ["sh", "-c", "mkdir -p /app/data && npm run db:generate && if [ \"${RUN_DB_PUSH_ON_START:-false}\" = \"true\" ]; then npm run db:push; fi && npm run start"]
+CMD ["sh", "-c", "mkdir -p /app/data && npm run db:generate && npm run db:push && npm run start"]

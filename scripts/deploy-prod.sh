@@ -6,7 +6,6 @@ cd "$ROOT_DIR"
 
 USE_POSTGRES=false
 USE_CADDY=false
-RUN_DB_PUSH=false
 SKIP_GIT=false
 SKIP_BUILD=false
 IMAGE_REPO="${APP_IMAGE_REPO:-brionispoptart/ticketera}"
@@ -19,7 +18,6 @@ Usage: ./scripts/deploy-prod.sh [options]
 Options:
   --caddy          Include optional Caddy reverse proxy service
   --postgres       Enable postgres profile during deploy
-  --run-db-push    Temporarily set RUN_DB_PUSH_ON_START=true for this deploy
   --skip-git       Skip git fetch/checkout/pull steps
   --skip-build     Skip image build and run compose up -d
   --image-repo REPO  Build/deploy using image repo REPO (default: APP_IMAGE_REPO)
@@ -36,10 +34,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --postgres)
       USE_POSTGRES=true
-      shift
-      ;;
-    --run-db-push)
-      RUN_DB_PUSH=true
       shift
       ;;
     --skip-git)
@@ -104,13 +98,6 @@ export APP_IMAGE_TAG="$IMAGE_TAG"
 echo "APP_IMAGE_REPO=$APP_IMAGE_REPO"
 echo "APP_IMAGE_TAG=$APP_IMAGE_TAG"
 
-if [[ "$RUN_DB_PUSH" = true ]]; then
-  export RUN_DB_PUSH_ON_START=true
-  echo "RUN_DB_PUSH_ON_START=true for this deploy"
-else
-  export RUN_DB_PUSH_ON_START=false
-fi
-
 if [[ "$SKIP_BUILD" = true ]]; then
   docker compose "${COMPOSE_ARGS[@]}" up -d
 else
@@ -120,6 +107,3 @@ fi
 docker compose "${COMPOSE_ARGS[@]}" ps
 
 echo "Deploy complete."
-if [[ "$RUN_DB_PUSH" = true ]]; then
-  echo "Reminder: set RUN_DB_PUSH_ON_START=false for normal production operation."
-fi

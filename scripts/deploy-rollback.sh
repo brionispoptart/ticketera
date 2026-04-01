@@ -83,7 +83,6 @@ fi
 
 export APP_IMAGE_REPO="$IMAGE_REPO"
 export APP_IMAGE_TAG="$TARGET_TAG"
-export RUN_DB_PUSH_ON_START=false
 
 echo "Rolling back to ${APP_IMAGE_REPO}:${APP_IMAGE_TAG}"
 

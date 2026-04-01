@@ -6,7 +6,6 @@ cd "$ROOT_DIR"
 
 USE_POSTGRES=false
 USE_CADDY=false
-RUN_DB_PUSH=false
 SKIP_GIT=false
 SKIP_BUILD=false
 CUSTOM_TAG=""
@@ -21,7 +20,6 @@ Options:
   --caddy          Include optional Caddy reverse proxy service
   --image-repo REPO  Use image repo REPO (default: APP_IMAGE_REPO)
   --postgres       Enable postgres profile during deploy
-  --run-db-push    Temporarily set RUN_DB_PUSH_ON_START=true for this release
   --skip-git       Skip git fetch/checkout/pull steps
   --skip-build     Skip image build and run compose up -d
   -h, --help       Show this help message
@@ -54,10 +52,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     --postgres)
       USE_POSTGRES=true
-      shift
-      ;;
-    --run-db-push)
-      RUN_DB_PUSH=true
       shift
       ;;
     --skip-git)
@@ -94,9 +88,6 @@ if [[ "$USE_CADDY" = true ]]; then
 fi
 if [[ "$USE_POSTGRES" = true ]]; then
   DEPLOY_ARGS+=(--postgres)
-fi
-if [[ "$RUN_DB_PUSH" = true ]]; then
-  DEPLOY_ARGS+=(--run-db-push)
 fi
 if [[ "$SKIP_GIT" = true ]]; then
   DEPLOY_ARGS+=(--skip-git)

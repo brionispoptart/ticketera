@@ -6,8 +6,6 @@ services:
       - no-new-privileges:true
     mem_limit: "1g"
     cpus: "1.00"
-    environment:
-      RUN_DB_PUSH_ON_START: ${RUN_DB_PUSH_ON_START:-false}
     logging:
       options:
         max-size: "10m"
