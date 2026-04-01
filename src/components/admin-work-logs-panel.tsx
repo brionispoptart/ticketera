@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, BarChart3, Clock3, RefreshCw, ShieldCheck } from "lucide-react";
 import { AdminSectionNav } from "@/components/admin-section-nav";
+import { UserColorChip } from "@/components/user-color-chip";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -216,7 +217,9 @@ export function AdminWorkLogsPanel({ currentUser, canViewAll }: { currentUser: C
               <SelectContent>
                 {canViewAll ? <SelectItem value="all">All technicians</SelectItem> : null}
                 {users.map((user) => (
-                  <SelectItem key={user.id} value={user.id}>{user.label} · {user.employeeId}</SelectItem>
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.label} · {user.employeeId}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -285,7 +288,7 @@ export function AdminWorkLogsPanel({ currentUser, canViewAll }: { currentUser: C
         <Card className="border-zinc-800 bg-zinc-950/80">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-zinc-50">
-              <Clock3 className="h-5 w-5 text-sky-300" />
+              <Clock3 className="h-5 w-5 text-teal-300" />
               Ticket attribution
             </CardTitle>
             <CardDescription>
@@ -333,7 +336,10 @@ export function AdminWorkLogsPanel({ currentUser, canViewAll }: { currentUser: C
                     <div className="space-y-2">
                       {userSummaries.map((userSummary) => (
                         <div key={userSummary.user.id} className="flex flex-wrap items-center justify-between gap-2 text-sm text-zinc-300">
-                          <div>{userSummary.user.label} · {userSummary.user.employeeId}</div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <UserColorChip label={userSummary.user.label} seed={userSummary.user.label} size="sm" />
+                            <span>{userSummary.user.employeeId}</span>
+                          </div>
                           <div>{userSummary.totalHours.toFixed(2)} h · {userSummary.ticketCount} ticket{userSummary.ticketCount === 1 ? "" : "s"}</div>
                         </div>
                       ))}
@@ -354,7 +360,10 @@ export function AdminWorkLogsPanel({ currentUser, canViewAll }: { currentUser: C
                         <Badge variant={entry.ateraCommentSync === "synced" ? "success" : "secondary"}>{entry.ateraCommentSync === "synced" ? "Atera synced" : "Internal only"}</Badge>
                       </div>
                     </div>
-                    <div className="mt-3 text-sm text-zinc-300">{entry.user.label} · {entry.user.employeeId}</div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-zinc-300">
+                      <UserColorChip label={entry.user.label} seed={entry.user.label} size="sm" />
+                      <span>{entry.user.employeeId}</span>
+                    </div>
                     {entry.noteText ? (
                       <div className="mt-3 rounded-xl border border-zinc-800 bg-black/20 px-3 py-3 text-sm text-zinc-300">{entry.noteText}</div>
                     ) : null}

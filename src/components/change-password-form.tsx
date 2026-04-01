@@ -51,7 +51,7 @@ export function ChangePasswordForm() {
   return (
     <Card className="border-zinc-800 bg-zinc-950/80 shadow-[0_20px_80px_rgba(0,0,0,0.45)] backdrop-blur-sm">
       <CardHeader className="space-y-3 border-b border-zinc-800/80 pb-6">
-        <div className="inline-flex w-fit items-center rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-amber-300">
+        <div className="inline-flex w-fit items-center rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-cyan-300">
           Required Step
         </div>
         <div className="space-y-2">

@@ -100,17 +100,24 @@ export async function testAteraConnection(): Promise<AteraConnectionTestResult> 
   };
 }
 
+const ticketDetailCache = new Map<string, { data: { TechnicianContactID?: number; TechnicianEmail?: string; EndUserID?: number }; expiresAt: number }>();
+const TICKET_DETAIL_CACHE_TTL_MS = 30_000;
+
 export async function ateraPostTicketNote(ticketId: string, message: string) {
   const note = message.trim();
   if (!note) {
     throw new Error("Message is required.");
   }
 
-  const ticket = await ateraJson<{
-    TechnicianContactID?: number;
-    TechnicianEmail?: string;
-    EndUserID?: number;
-  }>(`/tickets/${ticketId}`);
+  const cached = ticketDetailCache.get(ticketId);
+  let ticket: { TechnicianContactID?: number; TechnicianEmail?: string; EndUserID?: number };
+
+  if (cached && cached.expiresAt > Date.now()) {
+    ticket = cached.data;
+  } else {
+    ticket = await ateraJson<typeof ticket>(`/tickets/${ticketId}`);
+    ticketDetailCache.set(ticketId, { data: ticket, expiresAt: Date.now() + TICKET_DETAIL_CACHE_TTL_MS });
+  }
 
   const envTechIdRaw = process.env.ATERA_TECHNICIAN_ID;
   const envTechId = envTechIdRaw ? Number(envTechIdRaw) : undefined;

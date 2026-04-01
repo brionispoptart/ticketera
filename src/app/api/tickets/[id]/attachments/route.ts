@@ -55,7 +55,7 @@ export async function GET(
       const data = await ateraJson<unknown>(`/tickets/${id}/attachments`);
       return { items: normalizeAttachments(data) };
     });
-    return jsonWithEntityTag(request, payload);
+    return jsonWithEntityTag(request, payload, undefined, `tickets:${id}:attachments`);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

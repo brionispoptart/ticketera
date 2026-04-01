@@ -111,7 +111,7 @@ export async function GET(
   try {
     const { id } = await params;
     const ticket = await getCachedTicketDetail(id, () => ateraJson<Ticket>(`/tickets/${id}`));
-    return jsonWithEntityTag(request, ticket);
+    return jsonWithEntityTag(request, ticket, undefined, `tickets:${id}:detail`);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Clock3, Settings } from "lucide-react";
+import { CalendarDays, Clock3, Settings } from "lucide-react";
 import { TicketApp } from "@/components/ticket-app";
 import { LogoutButton } from "@/components/logout-button";
 import { buttonVariants } from "@/components/ui/button";
@@ -26,7 +26,7 @@ export default async function Home() {
           <div className="flex flex-wrap items-center gap-2">
             <div className="text-xl font-semibold text-zinc-50">{session.user.fullName || session.user.email}</div>
             {branding.hasAteraBranding && session.user.role === "ADMIN" ? (
-              <div className="rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-300">
+              <div className="rounded-full border border-teal-400/30 bg-teal-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-300">
                 {branding.displayName}
               </div>
             ) : null}
@@ -59,6 +59,17 @@ export default async function Home() {
             title="Hours"
           >
             <Clock3 className="h-[18px] w-[18px] stroke-[2.15]" />
+          </Link>
+          <Link
+            href="/calendar"
+            className={cn(
+              buttonVariants({ size: "icon" }),
+              "ticket-action-btn h-11 w-11 rounded-xl border border-zinc-700 bg-zinc-900/85 text-zinc-200 hover:border-zinc-500 hover:bg-zinc-800 hover:text-zinc-50",
+            )}
+            aria-label="Calendar"
+            title="Calendar"
+          >
+            <CalendarDays className="h-[18px] w-[18px] stroke-[2.15]" />
           </Link>
           <LogoutButton className="ml-auto" />
           </div>

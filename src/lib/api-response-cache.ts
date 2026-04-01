@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { getCachedEtag, setCachedEtag } from "./ticket-response-cache";
 
 function normalizeEntityTag(value: string) {
   return value.trim();
@@ -24,9 +25,17 @@ export function createJsonEntityTag(payload: unknown) {
   return `W/"${digest}"`;
 }
 
-export function jsonWithEntityTag(request: NextRequest, payload: unknown, init?: ResponseInit) {
+export function jsonWithEntityTag(request: NextRequest, payload: unknown, init?: ResponseInit, cacheKey?: string) {
   const startedAt = Date.now();
-  const etag = createJsonEntityTag(payload);
+
+  let etag: string | null = cacheKey ? getCachedEtag(cacheKey) : null;
+  if (!etag) {
+    etag = createJsonEntityTag(payload);
+    if (cacheKey) {
+      setCachedEtag(cacheKey, etag);
+    }
+  }
+
   const headers = new Headers(init?.headers);
   headers.set("Server-Timing", `etag;dur=${Date.now() - startedAt}`);
   headers.set("ETag", etag);

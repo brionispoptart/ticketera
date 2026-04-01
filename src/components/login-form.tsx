@@ -63,7 +63,7 @@ export function LoginForm({ branding }: { branding: LoginBranding }) {
           <h1 className="text-[1.7rem] font-semibold tracking-tight text-zinc-50 sm:text-3xl">Sign in to {branding.displayName}</h1>
           {branding.hasAteraBranding ? (
             <div className="space-y-1.5 sm:space-y-2">
-              <p className="max-w-md text-[13px] leading-5 text-amber-100/90 sm:text-sm sm:leading-6">
+              <p className="max-w-md text-[13px] leading-5 text-cyan-100/90 sm:text-sm sm:leading-6">
                 This workspace is for {branding.displayName} internal use only.
               </p>
               <p className="max-w-md text-[13px] leading-5 text-zinc-400 sm:text-sm sm:leading-6">

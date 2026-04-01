@@ -33,16 +33,19 @@ export async function GET() {
     await prisma.$queryRaw`SELECT 1`;
     response.checks.database = true;
 
-    const adminCount = await prisma.user.count({ where: { role: "ADMIN" } });
+    const [adminCount, sessionCount, appConfigCount, setup] = await Promise.all([
+      prisma.user.count({ where: { role: "ADMIN" } }),
+      prisma.session.count(),
+      prisma.appConfig.count(),
+      getSetupStatus(),
+    ]);
+
     response.checks.usersTable = true;
-    await prisma.session.count();
-    response.checks.sessionsTable = true;
-    await prisma.appConfig.count();
-    response.checks.appConfigTable = true;
+    response.checks.sessionsTable = sessionCount >= 0;
+    response.checks.appConfigTable = appConfigCount >= 0;
     response.checks.adminPresent = adminCount > 0;
     response.details.adminCount = adminCount;
 
-    const setup = await getSetupStatus();
     response.checks.ateraConfigured = setup.hasAteraApiKey;
     response.checks.configEncryptionReady = setup.hasEncryptionKey || !setup.hasStoredAteraApiKey;
     response.details.hasStoredAteraApiKey = setup.hasStoredAteraApiKey;

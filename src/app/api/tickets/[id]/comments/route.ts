@@ -58,7 +58,7 @@ export async function GET(
       const data = await ateraJson<AteraCommentsResponse>(`/tickets/${id}/comments`);
       return { items: toSortedDisplayItems(Array.isArray(data?.items) ? data.items : []) };
     });
-    return jsonWithEntityTag(request, payload);
+    return jsonWithEntityTag(request, payload, undefined, `tickets:${id}:comments`);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

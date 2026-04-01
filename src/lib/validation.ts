@@ -78,6 +78,57 @@ export const resetPasswordRequestSchema = z.object({
   password: optionalTrimmedString(PASSWORD_MAX_LENGTH),
 }).strict();
 
+const scheduleEventTypeSchema = z.enum(["OUT_OF_OFFICE", "ONSITE"]);
+
+const scheduleTicketIdSchema = z
+  .preprocess(
+    (value) => {
+      if (typeof value === "string") {
+        const trimmed = value.trim();
+        if (!trimmed) {
+          return undefined;
+        }
+        return Number(trimmed);
+      }
+      return value;
+    },
+    z.number().int("Ticket ID must be a whole number.").positive("Ticket ID must be greater than zero.").optional(),
+  )
+  .optional();
+
+const scheduleTicketAttachmentSchema = z
+  .object({
+    ticketId: z.preprocess(
+      (value) => {
+        if (typeof value === "string") {
+          const trimmed = value.trim();
+          return trimmed ? Number(trimmed) : Number.NaN;
+        }
+
+        return value;
+      },
+      z.number().int("Ticket ID must be a whole number.").positive("Ticket ID must be greater than zero."),
+    ),
+    ticketTitle: optionalTrimmedString(255),
+  })
+  .strict();
+
+const scheduleBaseSchema = z.object({
+  technicianUserId: optionalTrimmedString(64),
+  eventType: scheduleEventTypeSchema,
+  startDate: requiredTrimmedString("Start date", 64),
+  endDate: requiredTrimmedString("End date", 64),
+  title: optionalTrimmedString(255),
+  notes: optionalTrimmedString(2000),
+  ticketId: scheduleTicketIdSchema,
+  ticketTitle: optionalTrimmedString(255),
+  tickets: z.array(scheduleTicketAttachmentSchema).max(25, "You can attach up to 25 tickets.").optional(),
+}).strict();
+
+export const createScheduleEventRequestSchema = scheduleBaseSchema;
+
+export const updateScheduleEventRequestSchema = scheduleBaseSchema.partial().strict();
+
 export function getValidationErrorMessage(error: z.ZodError) {
   return error.issues[0]?.message || "Invalid request.";
 }

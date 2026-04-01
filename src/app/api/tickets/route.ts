@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
       const items = Array.isArray(data.items) ? data.items.map(toTicketListItem) : [];
       return { items };
     });
-    return jsonWithEntityTag(request, payload);
+    return jsonWithEntityTag(request, payload, undefined, "tickets:list");
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

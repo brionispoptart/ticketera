@@ -26,6 +26,8 @@ model User {
   updatedAt          DateTime @updatedAt
   sessions           Session[]
   workLogs           WorkLog[]
+  scheduleEvents     ScheduleEvent[] @relation("ScheduleEventTechnician")
+  createdScheduleEvents ScheduleEvent[] @relation("ScheduleEventCreator")
 
   @@index([role])
   @@index([isActive])
@@ -87,4 +89,39 @@ model WorkLog {
   @@index([userId, createdAt])
   @@index([ticketId, createdAt])
   @@index([entryType])
+}
+
+model ScheduleEvent {
+  id               String   @id @default(cuid())
+  technicianUserId String
+  createdByUserId  String
+  eventType        String
+  startDate        DateTime
+  endDate          DateTime
+  title            String?
+  notes            String?
+  ticketId         Int?
+  ticketTitle      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  technician       User     @relation("ScheduleEventTechnician", fields: [technicianUserId], references: [id], onDelete: Cascade)
+  createdByUser    User     @relation("ScheduleEventCreator", fields: [createdByUserId], references: [id], onDelete: Cascade)
+  scheduleEventTickets ScheduleEventTicket[]
+
+  @@index([technicianUserId, startDate])
+  @@index([startDate, endDate])
+  @@index([eventType])
+}
+
+model ScheduleEventTicket {
+  id              String   @id @default(cuid())
+  scheduleEventId String
+  ticketId        Int
+  ticketTitle     String?
+  createdAt       DateTime @default(now())
+  scheduleEvent   ScheduleEvent @relation(fields: [scheduleEventId], references: [id], onDelete: Cascade)
+
+  @@unique([scheduleEventId, ticketId])
+  @@index([scheduleEventId])
+  @@index([ticketId])
 }

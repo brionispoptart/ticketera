@@ -189,7 +189,7 @@ export function AdminAteraSettingsPanel() {
 
       <div className="space-y-6 pt-3">
       {banner ? (
-        <div className={`rounded-3xl border px-4 py-4 ${banner.type === "error" ? "border-rose-500/30 bg-rose-500/10 text-rose-100" : banner.type === "success" ? "border-lime-500/30 bg-lime-500/10 text-lime-100" : "border-sky-500/30 bg-sky-500/10 text-sky-100"}`}>
+        <div className={`rounded-3xl border px-4 py-4 ${banner.type === "error" ? "border-rose-500/30 bg-rose-500/10 text-rose-100" : banner.type === "success" ? "border-lime-500/30 bg-lime-500/10 text-lime-100" : "border-teal-500/30 bg-teal-500/10 text-teal-100"}`}>
           <div className="font-semibold">{banner.title}</div>
           <div className="mt-1 text-sm opacity-90">{banner.message}</div>
         </div>
@@ -217,7 +217,7 @@ export function AdminAteraSettingsPanel() {
         </CardContent>
         {status?.hasEnvFallback ? (
           <CardContent className="pt-0">
-            <div className="rounded-[20px] border border-sky-400/30 bg-sky-400/10 px-4 py-3 text-sm text-sky-100">
+            <div className="rounded-[20px] border border-teal-400/30 bg-teal-400/10 px-4 py-3 text-sm text-teal-100">
               Removing the stored key will not disable Atera access while `ATERA_API_KEY` is still set in the environment.
             </div>
           </CardContent>
@@ -234,7 +234,7 @@ export function AdminAteraSettingsPanel() {
       <Card className="border-zinc-800 bg-zinc-950/80">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-zinc-50">
-            <KeyRound className="h-5 w-5 text-sky-300" />
+            <KeyRound className="h-5 w-5 text-teal-300" />
             Rotate stored Atera API key
           </CardTitle>
           <CardDescription>

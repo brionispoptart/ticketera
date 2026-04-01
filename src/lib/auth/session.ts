@@ -114,10 +114,13 @@ export async function getSessionUser(token: string | undefined) {
     return null;
   }
 
-  await prisma.session.update({
-    where: { id: session.id },
-    data: { lastSeenAt: new Date() },
-  });
+  const LAST_SEEN_THROTTLE_MS = 5 * 60 * 1000;
+  if (!session.lastSeenAt || Date.now() - session.lastSeenAt.getTime() > LAST_SEEN_THROTTLE_MS) {
+    await prisma.session.update({
+      where: { id: session.id },
+      data: { lastSeenAt: new Date() },
+    });
+  }
 
   return {
     sessionId: session.id,

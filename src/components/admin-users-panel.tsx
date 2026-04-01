@@ -6,6 +6,7 @@ import { PASSWORD_REQUIREMENTS_TEXT } from "@/lib/auth/password-policy";
 import { AdminSectionNav } from "@/components/admin-section-nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { UserColorChip } from "@/components/user-color-chip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -277,7 +278,7 @@ export function AdminUsersPanel({ currentUserId }: { currentUserId: string }) {
 
       <div className="space-y-6 pt-3">
       {banner ? (
-        <div className={`rounded-3xl border px-4 py-4 ${banner.type === "error" ? "border-rose-500/30 bg-rose-500/10 text-rose-100" : banner.type === "success" ? "border-lime-500/30 bg-lime-500/10 text-lime-100" : "border-sky-500/30 bg-sky-500/10 text-sky-100"}`}>
+        <div className={`rounded-3xl border px-4 py-4 ${banner.type === "error" ? "border-rose-500/30 bg-rose-500/10 text-rose-100" : banner.type === "success" ? "border-lime-500/30 bg-lime-500/10 text-lime-100" : "border-teal-500/30 bg-teal-500/10 text-teal-100"}`}>
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
             <div className="space-y-1">
@@ -324,7 +325,7 @@ export function AdminUsersPanel({ currentUserId }: { currentUserId: string }) {
           <Card className="border-zinc-800 bg-zinc-950/80">
             <CardHeader className="border-b border-zinc-800/80 pb-4">
               <CardTitle className="flex items-center gap-2 text-zinc-50">
-                <UserRoundCog className="h-5 w-5 text-sky-300" />
+                <UserRoundCog className="h-5 w-5 text-teal-300" />
                 Existing users
               </CardTitle>
               <CardDescription>Choose a user to inspect or update. Admin self-edit is intentionally blocked here.</CardDescription>
@@ -345,11 +346,11 @@ export function AdminUsersPanel({ currentUserId }: { currentUserId: string }) {
                       >
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <div>
-                            <div className="font-semibold text-zinc-100">{user.firstName} {user.lastName}</div>
+                            <UserColorChip label={`${user.firstName} ${user.lastName}`.trim() || user.email} seed={`${user.firstName} ${user.lastName}`.trim() || user.email} />
                             <div className="text-sm text-zinc-400">{user.email} · {user.employeeId}</div>
                           </div>
                           <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em]">
-                            <span className={`rounded-full border px-2 py-1 ${user.role === "ADMIN" ? "border-sky-400/30 bg-sky-400/10 text-sky-300" : "border-zinc-700 bg-zinc-900 text-zinc-300"}`}>{user.role}</span>
+                            <span className={`rounded-full border px-2 py-1 ${user.role === "ADMIN" ? "border-teal-400/30 bg-teal-400/10 text-teal-300" : "border-zinc-700 bg-zinc-900 text-zinc-300"}`}>{user.role}</span>
                             <span className="rounded-full border border-zinc-700 bg-zinc-900 px-2 py-1 text-zinc-300">{user.technicianLevel}</span>
                             <span className={`rounded-full border px-2 py-1 ${user.isActive ? "border-lime-400/30 bg-lime-400/10 text-lime-300" : "border-rose-500/30 bg-rose-500/10 text-rose-300"}`}>{user.isActive ? "Active" : "Inactive"}</span>
                             {user.lockedUntil ? <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-1 text-amber-300">Locked</span> : null}

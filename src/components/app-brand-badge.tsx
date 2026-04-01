@@ -38,8 +38,8 @@ export function AppBrandBadge({ displayName, location, plan, compact = false, un
         </div>
         <div
           className={[
-            "w-[92px] shrink-0 rounded-full border border-sky-400/30 px-2.5 py-1 text-center text-[11px] font-semibold uppercase tracking-[0.16em] transition-opacity",
-            unreadCount > 0 ? "bg-sky-400/12 text-sky-300 opacity-100" : "bg-transparent text-transparent opacity-0",
+            "w-[92px] shrink-0 rounded-full border border-teal-400/30 px-2.5 py-1 text-center text-[11px] font-semibold uppercase tracking-[0.16em] transition-opacity",
+            unreadCount > 0 ? "bg-teal-400/12 text-teal-300 opacity-100" : "bg-transparent text-transparent opacity-0",
           ].join(" ")}
           aria-hidden={unreadCount === 0}
         >

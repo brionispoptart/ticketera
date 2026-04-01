@@ -5,6 +5,7 @@ type CacheRecord<T> = {
 };
 
 const cache = new Map<string, CacheRecord<unknown>>();
+const etagCache = new Map<string, string>();
 
 const TICKET_LIST_TTL_MS = 15_000;
 const TICKET_RESOURCE_TTL_MS = 10_000;
@@ -29,6 +30,7 @@ async function loadThroughCache<T>(key: string, ttlMs: number, loader: () => Pro
         value,
         expiresAt: Date.now() + ttlMs,
       });
+      etagCache.delete(key);
       return value;
     })
     .catch((error) => {
@@ -43,6 +45,14 @@ async function loadThroughCache<T>(key: string, ttlMs: number, loader: () => Pro
   });
 
   return inFlight;
+}
+
+export function getCachedEtag(key: string) {
+  return etagCache.get(key) ?? null;
+}
+
+export function setCachedEtag(key: string, etag: string) {
+  etagCache.set(key, etag);
 }
 
 export function getCachedTicketList<T>(loader: () => Promise<T>) {

@@ -126,6 +126,73 @@ function statusLane(status?: string): LaneId {
 
 const OVERVIEW_TAG_BASE_CLASS = "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap";
 
+function statusBadgeClass(status?: string) {
+  const lane = statusLane(status);
+  if (lane === "done") {
+    return "border-emerald-500/40 bg-emerald-500/10 text-emerald-300";
+  }
+  if (lane === "new") {
+    return "border-teal-500/40 bg-teal-500/10 text-teal-300";
+  }
+  return "border-amber-500/40 bg-amber-500/10 text-amber-300";
+}
+
+function priorityBadgeClass(priority?: string) {
+  const p = (priority || "").trim().toLowerCase();
+  if (p.includes("critical") || p.includes("urgent")) {
+    return "border-rose-500/40 bg-rose-500/10 text-rose-300";
+  }
+  if (p.includes("high")) {
+    return "border-orange-500/40 bg-orange-500/10 text-orange-300";
+  }
+  if (p.includes("medium") || p.includes("normal")) {
+    return "border-amber-500/40 bg-amber-500/10 text-amber-300";
+  }
+  return "border-teal-500/40 bg-teal-500/10 text-teal-300";
+}
+
+function impactBadgeClass(impact?: string) {
+  const i = (impact || "").trim().toLowerCase();
+  if (i.includes("sitedown") || i.includes("site down") || i.includes("major")) {
+    return "border-rose-500/40 bg-rose-500/10 text-rose-300";
+  }
+  if (i.includes("minor")) {
+    return "border-amber-500/40 bg-amber-500/10 text-amber-300";
+  }
+  return "border-emerald-500/40 bg-emerald-500/10 text-emerald-300";
+}
+
+function formatShortDate(value?: string) {
+  if (!value) {
+    return "";
+  }
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) {
+    return "";
+  }
+  return d.toLocaleString();
+}
+
+function renderOverviewTag(label: string, toneClass: string) {
+  return <span className={`${OVERVIEW_TAG_BASE_CLASS} ${toneClass}`}>{label}</span>;
+}
+
+function cleanCommentText(comment?: TicketComment) {
+  const flattened = normalizeRichText(comment?.Comment || comment?.CommentHtml || "");
+  return flattened || "(No text)";
+}
+
+function formatCommentDate(value?: string) {
+  if (!value) {
+    return "Unknown time";
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleString();
+}
+
 export function TicketApp({ brand }: { brand: TicketAppBranding }) {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selected, setSelected] = useState<Ticket | null>(null);
@@ -359,57 +426,6 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
 
   function syncTicketInList(nextTicket: Ticket) {
     setTickets((current) => current.map((ticket) => (ticket.TicketID === nextTicket.TicketID ? { ...ticket, ...nextTicket } : ticket)));
-  }
-
-  function statusBadgeClass(status?: string) {
-    const lane = statusLane(status);
-    if (lane === "done") {
-      return "border-emerald-500/40 bg-emerald-500/10 text-emerald-300";
-    }
-    if (lane === "new") {
-      return "border-sky-500/40 bg-sky-500/10 text-sky-300";
-    }
-    return "border-amber-500/40 bg-amber-500/10 text-amber-300";
-  }
-
-  function priorityBadgeClass(priority?: string) {
-    const p = (priority || "").trim().toLowerCase();
-    if (p.includes("critical") || p.includes("urgent")) {
-      return "border-rose-500/40 bg-rose-500/10 text-rose-300";
-    }
-    if (p.includes("high")) {
-      return "border-orange-500/40 bg-orange-500/10 text-orange-300";
-    }
-    if (p.includes("medium") || p.includes("normal")) {
-      return "border-amber-500/40 bg-amber-500/10 text-amber-300";
-    }
-    return "border-sky-500/40 bg-sky-500/10 text-sky-300";
-  }
-
-  function impactBadgeClass(impact?: string) {
-    const i = (impact || "").trim().toLowerCase();
-    if (i.includes("sitedown") || i.includes("site down") || i.includes("major")) {
-      return "border-rose-500/40 bg-rose-500/10 text-rose-300";
-    }
-    if (i.includes("minor")) {
-      return "border-amber-500/40 bg-amber-500/10 text-amber-300";
-    }
-    return "border-emerald-500/40 bg-emerald-500/10 text-emerald-300";
-  }
-
-  function formatShortDate(value?: string) {
-    if (!value) {
-      return "";
-    }
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) {
-      return "";
-    }
-    return d.toLocaleString();
-  }
-
-  function renderOverviewTag(label: string, toneClass: string) {
-    return <span className={`${OVERVIEW_TAG_BASE_CLASS} ${toneClass}`}>{label}</span>;
   }
 
   async function copyTicketId() {
@@ -677,22 +693,6 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
     return detailed;
   }
 
-  function cleanCommentText(comment?: TicketComment) {
-    const flattened = normalizeRichText(comment?.Comment || comment?.CommentHtml || "");
-    return flattened || "(No text)";
-  }
-
-  function formatCommentDate(value?: string) {
-    if (!value) {
-      return "Unknown time";
-    }
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-      return value;
-    }
-    return date.toLocaleString();
-  }
-
   async function selectTicket(ticket: Ticket) {
     if (ticketSelectionControllerRef.current) {
       ticketSelectionControllerRef.current.abort();
@@ -779,8 +779,10 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
 
       const detailed = await loadTicketDetails(selected.TicketID);
       syncTicketInList(detailed);
-      await loadTicketComments(selected.TicketID);
-      await loadAttachments(selected.TicketID);
+      await Promise.all([
+        loadTicketComments(selected.TicketID),
+        loadAttachments(selected.TicketID),
+      ]);
 
       setStatus({
         message: options?.autosave
