@@ -12,6 +12,7 @@ export type Ticket = {
   TechnicianContactID?: number;
   TechnicianFullName?: string;
   TicketCreatedDate?: string;
+  CustomerName?: string;
 };
 
 export type TicketComment = {

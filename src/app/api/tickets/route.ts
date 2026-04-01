@@ -20,6 +20,7 @@ function toTicketListItem(ticket: Ticket): Ticket {
     TechnicianContactID: ticket.TechnicianContactID,
     TechnicianFullName: ticket.TechnicianFullName,
     TicketCreatedDate: ticket.TicketCreatedDate,
+    CustomerName: ticket.CustomerName,
   };
 }
 

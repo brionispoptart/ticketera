@@ -199,6 +199,8 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
   const [currentTab, setCurrentTab] = useState<LaneId>("new");
   const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
+  const [clientFilter, setClientFilter] = useState("");
+  const [allClientNames, setAllClientNames] = useState<string[]>([]);
   const [workNote, setWorkNote] = useState("");
   const [workHours, setWorkHours] = useState("");
   const [resolveNote, setResolveNote] = useState("");
@@ -277,9 +279,20 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
     writeCachedJson(TICKET_ATTACHMENTS_CACHE_KEY, next);
   }
 
+  const clientNames = useMemo(() => {
+    if (allClientNames.length > 0) return allClientNames;
+    const names = new Set<string>();
+    for (const t of tickets) {
+      if (t.CustomerName) names.add(t.CustomerName);
+    }
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+  }, [tickets, allClientNames]);
+
   const filtered = useMemo(() => {
     return tickets
       .filter((ticket) => {
+      if (clientFilter && ticket.CustomerName !== clientFilter) return false;
+
       const q = deferredSearch.trim().toLowerCase();
       if (!q) {
         const lane = statusLane(ticket.TicketStatus);
@@ -292,6 +305,7 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
         ticket.EndUserEmail,
         ticket.EndUserFirstName,
         ticket.EndUserLastName,
+        ticket.CustomerName,
         String(ticket.TicketID),
       ]
         .filter(Boolean)
@@ -305,7 +319,7 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
         const bt = b.TicketCreatedDate ? Date.parse(b.TicketCreatedDate) : 0;
         return bt - at;
       });
-  }, [tickets, currentTab, deferredSearch]);
+  }, [tickets, currentTab, deferredSearch, clientFilter]);
 
   const counts = useMemo(() => {
     let open = 0;
@@ -556,6 +570,15 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
   useEffect(() => {
     void loadTickets({ showToast: false });
   }, [loadTickets]);
+
+  useEffect(() => {
+    fetch("/api/customers")
+      .then((res) => res.json())
+      .then((data: { items?: string[] }) => {
+        if (Array.isArray(data.items)) setAllClientNames(data.items);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -1024,35 +1047,43 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
                     {[brand.location, brand.plan].filter(Boolean).join(" · ") || "Current operator workspace"}
                   </div>
                 </div>
-                <div className="rounded-full border border-lime-400/30 bg-lime-400/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-lime-300">
-                  {brand.hasAteraBranding ? "Brand Synced" : "Ticketera"}
-                </div>
+                <Select value={clientFilter || "all"} onValueChange={(v) => setClientFilter(v === "all" ? "" : v)}>
+                  <SelectTrigger className="h-9 w-full sm:w-[22rem] shrink-0 text-xs">
+                    <SelectValue placeholder="All clients" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All clients</SelectItem>
+                    {clientNames.map((name) => (
+                      <SelectItem key={name} value={name}>{name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div className="ticket-action-strip flex flex-wrap gap-1.5">
+              <div className="ticket-action-strip flex justify-center gap-1.5 sm:justify-start">
                 {laneTabs.map((tab) => (
                   <Button
                     key={tab.id}
                     size="sm"
                     variant={search.trim() ? "secondary" : currentTab === tab.id ? "default" : "secondary"}
                     onClick={() => handleTabClick(tab.id)}
-                    className="ticket-action-btn ticket-tab-btn flex-shrink-0"
+                    className="ticket-action-btn ticket-tab-btn min-h-0 h-9 flex-shrink-0"
                   >
                     {tab.label}
                   </Button>
                 ))}
               </div>
 
-              <div className="flex min-w-0 w-full flex-1 gap-2 sm:max-w-72">
+              <div className="flex min-w-0 w-full flex-1 gap-2 sm:max-w-md">
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search tickets..."
                   className="h-9"
                 />
-                {search ? (
-                  <Button size="sm" variant="outline" onClick={() => setSearch("")} className="ticket-action-btn shrink-0">Clear</Button>
+                {(search || clientFilter) ? (
+                  <Button size="sm" variant="outline" onClick={() => { setSearch(""); setClientFilter(""); }} className="ticket-action-btn min-h-0 h-9 shrink-0">Clear</Button>
                 ) : null}
               </div>
             </div>
@@ -1102,7 +1133,7 @@ export function TicketApp({ brand }: { brand: TicketAppBranding }) {
                 <div className="w-full">
                   <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs font-semibold text-zinc-300">#{ticket.TicketID}</div>
+                    <div className="text-xs font-semibold text-zinc-300">#{ticket.TicketID}{ticket.CustomerName && <span className="ml-2 font-normal text-zinc-500">{ticket.CustomerName}</span>}</div>
                     <div className="mt-1 truncate text-sm font-semibold text-zinc-100">{ticket.TicketTitle}</div>
                   </div>
                   <div className="flex flex-wrap justify-start gap-1 sm:max-w-60 sm:justify-end">
