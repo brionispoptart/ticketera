@@ -217,22 +217,27 @@ async function fetchAteraAccountBrandingForKey(apiKey: string): Promise<AteraAcc
 }
 
 async function getAppConfigRecord(): Promise<AppConfigRecord | null> {
-  const config = await prisma.appConfig.findUnique({
-    where: { id: APP_CONFIG_ID },
-    select: {
-      id: true,
-      ateraApiKey: true,
-      ateraAccountId: true,
-      ateraCompanyName: true,
-      ateraHomepageUrl: true,
-      ateraLocation: true,
-      ateraPlan: true,
-      setupCompletedAt: true,
-      updatedAt: true,
-    },
-  });
+  try {
+    const config = await prisma.appConfig.findUnique({
+      where: { id: APP_CONFIG_ID },
+      select: {
+        id: true,
+        ateraApiKey: true,
+        ateraAccountId: true,
+        ateraCompanyName: true,
+        ateraHomepageUrl: true,
+        ateraLocation: true,
+        ateraPlan: true,
+        setupCompletedAt: true,
+        updatedAt: true,
+      },
+    });
 
-  return (config as AppConfigRecord | null) ?? null;
+    return (config as AppConfigRecord | null) ?? null;
+  } catch {
+    // Table may not exist yet (e.g. during Docker build with no database).
+    return null;
+  }
 }
 
 export async function getConfiguredAteraApiKey() {
